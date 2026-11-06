@@ -5,10 +5,11 @@ export interface Settings {
   music: number; // 0..1
   sfx: number; // 0..1
   crt: boolean;
+  easy: boolean; // easy mode: several hits per life
 }
 
 const KEY = 'moop.settings.v1';
-const DEFAULTS: Settings = { muted: false, music: 0.6, sfx: 0.9, crt: false };
+const DEFAULTS: Settings = { muted: false, music: 0.6, sfx: 0.9, crt: false, easy: false };
 
 function load(): Settings {
   try {

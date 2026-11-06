@@ -104,6 +104,10 @@ export const T = {
   },
 
   lives: 3,
+  easy: {
+    hits: 3,            // easy mode: the 3rd hit in one life knocks him out
+    invuln: 90,         // frames of blinking after a hit, when nothing can hurt him
+  },
   readyFrames: 100,   // long enough for the 'get ready' jingle
   deathFrames: 150,
   clearFrames: 110,

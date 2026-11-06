@@ -17,6 +17,7 @@ import type { Phase } from '../sim/game';
 import { PauseMenu } from '../view/pauseMenu';
 import { attachCrt } from '../view/crt';
 import { botInput } from '../sim/bot';
+import { settings } from '../systems/settings';
 
 const STEP_MS = 1000 / T.FPS;
 const K = Phaser.Input.Keyboard.KeyCodes;
@@ -183,6 +184,9 @@ export class GameScene extends Phaser.Scene {
 
     if (JD(this.keys.space) || JD(this.keys.z)) this.jumpLatch = true;
 
+    // easy mode can be switched from the title screen or the pause menu (the demo is always normal)
+    this.sim.hitsPerLife = settings.easy && !this.demo ? T.easy.hits : 1;
+
     this.acc += Math.min(delta, 100);
     let steps = 0;
     while (this.acc >= STEP_MS && steps < 5) {
@@ -305,7 +309,8 @@ export class GameScene extends Phaser.Scene {
     } else {
       drawSon(this.chars, s.son);
     }
-    drawDad(this.chars, g, s.dad, s.frame);
+    // easy mode: blink after a hit
+    if (!(s.dad.invuln > 0 && s.frame % 8 < 4)) drawDad(this.chars, g, s.dad, s.frame);
     this.sweat.draw(this.front);
 
     // the recycling bag held out in front: it swells as it fills up
@@ -327,6 +332,10 @@ export class GameScene extends Phaser.Scene {
       g.fillStyle(P.grey1, 1).fillRect(6 + i * 8, 24, 5, 2);
       g.fillStyle(P.skin, 1).fillRect(6 + i * 8, 26, 5, 4);
     }
+    // easy mode: hits left this life (small red pips under the heads)
+    if (s.hitsPerLife > 1 && s.dad.state !== 'dead') {
+      for (let i = 0; i < s.hitsPerLife - s.dad.hits; i++) g.fillStyle(P.red, 1).fillRect(6 + i * 5, 33, 3, 3);
+    }
 
     const pad = (n: number) => String(n).padStart(6, '0');
     this.scoreText.setText(pad(s.score));
@@ -339,7 +348,7 @@ export class GameScene extends Phaser.Scene {
     if (s.phase === 'ready') msg = s.loop > 1 ? `${s.level.def.name} - FASTER!` : `${s.level.def.name} - GET READY`;
     else if (airportStage && (s.phase === 'clear' || s.phase === 'tally')) {
       if (s.phase === 'tally' || s.son.board.step === 'done') msg = 'YOU MADE YOUR FLIGHT!';
-    } else if (s.phase === 'clear' || s.phase === 'tally') msg = 'HE GOT AWAY!';
+    } else if (s.phase === 'clear' || s.phase === 'tally') msg = 'GET IN THE CAR!';
     this.msgText.setText(msg);
     this.msgText.setY(airportStage ? 226 : 126); // airport: below the floors, clear of the son's gate
   }

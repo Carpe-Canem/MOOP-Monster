@@ -20,6 +20,11 @@ export const SFX: Record<string, Tone[]> = {
   jump: [{ wave: 'p25', f0: 260, f1: 720, d: 0.13, v: 0.16 }],
   land: [{ wave: 'noise', f0: 300, d: 0.035, v: 0.1 }],
   jumpOver: arp('p50', [988, 1319], 0.05, 0.1),
+  hurt: [
+    { wave: 'noise', f0: 900, f1: 250, d: 0.07, v: 0.22 }, // thwack
+    { wave: 'p25', f0: 520, f1: 260, at: 0.03, d: 0.1, v: 0.14 }, // ow!
+    { wave: 'p25', f0: 390, f1: 200, at: 0.13, d: 0.1, v: 0.11 },
+  ],
   knockout: [
     { wave: 'noise', f0: 700, f1: 200, d: 0.08, v: 0.25 }, // bonk
     { wave: 'p50', f0: 880, f1: 660, at: 0.06, d: 0.12, v: 0.14 },

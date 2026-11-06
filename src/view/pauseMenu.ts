@@ -1,14 +1,14 @@
-// The pause menu: Resume / Music vol / Effects vol / Sound on-off / CRT on-off / Quit.
+// The pause menu: Resume / Music vol / Effects vol / Sound on-off / CRT on-off / Easy on-off / Quit.
 // Every change is saved in the browser immediately.
 import Phaser from 'phaser';
 import { ctext, text } from './font';
 import { P } from './palette';
 import { audio } from '../audio/engine';
-import { settings } from '../systems/settings';
+import { settings, saveSettings } from '../systems/settings';
 import { crtOn, setCrt } from './crt';
 
-type Item = 'resume' | 'music' | 'sfx' | 'sound' | 'crt' | 'quit';
-const ITEMS: Item[] = ['resume', 'music', 'sfx', 'sound', 'crt', 'quit'];
+type Item = 'resume' | 'music' | 'sfx' | 'sound' | 'crt' | 'easy' | 'quit';
+const ITEMS: Item[] = ['resume', 'music', 'sfx', 'sound', 'crt', 'easy', 'quit'];
 
 export class PauseMenu {
   private root: Phaser.GameObjects.Container;
@@ -22,10 +22,10 @@ export class PauseMenu {
     private onQuit: () => void,
   ) {
     const g = scene.add.graphics();
-    g.fillStyle(P.navy, 0.94).fillRect(34, 76, 156, 104);
-    g.lineStyle(1, P.cyan, 1).strokeRect(34.5, 76.5, 155, 103);
+    g.fillStyle(P.navy, 0.94).fillRect(34, 76, 156, 115);
+    g.lineStyle(1, P.cyan, 1).strokeRect(34.5, 76.5, 155, 114);
     const title = ctext(scene, 112, 82, 'PAUSED', P.yellow);
-    const hint = ctext(scene, 112, 168, 'ENTER SELECT  P RESUME', P.grey1);
+    const hint = ctext(scene, 112, 179, 'ENTER SELECT  P RESUME', P.grey1);
     this.rows = ITEMS.map((_, i) => text(scene, 46, 96 + i * 11, ''));
     this.root = scene.add.container(0, 0, [g, title, hint, ...this.rows]).setDepth(20).setVisible(false);
 
@@ -66,6 +66,8 @@ export class PauseMenu {
         return `SOUND   ${settings.muted ? 'OFF' : 'ON'}`;
       case 'crt':
         return `CRT     ${crtOn() ? 'ON' : 'OFF'}`;
+      case 'easy':
+        return `EASY    ${settings.easy ? 'ON' : 'OFF'}`;
       case 'quit':
         return 'QUIT TO TITLE';
     }
@@ -86,6 +88,10 @@ export class PauseMenu {
       else if (item === 'sfx') audio.setSfxVolume(Math.round((settings.sfx + dir * 0.1) * 10) / 10);
       else if (item === 'sound') audio.setMuted(!settings.muted);
       else if (item === 'crt') setCrt(!crtOn());
+      else if (item === 'easy') {
+        settings.easy = !settings.easy;
+        saveSettings();
+      }
       else return;
       audio.sfx('tick');
     };

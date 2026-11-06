@@ -22,6 +22,10 @@ export interface Dad {
   bag: { count: number; timer: number } | null;
   jumpCredits: Set<number>;
   deadTimer: number;
+  /** easy mode: hits taken this life */
+  hits: number;
+  /** frames left of post-hit blinking (can't be hurt while > 0) */
+  invuln: number;
 }
 
 export type HazardKind = 'roller' | 'bouncer' | 'case'; // case = stray suitcase (airport)
@@ -129,6 +133,8 @@ export class GameSim {
   // airport state (empty in the house)
   belts: BeltState[] = [];
   private chuteTimer = 0;
+  /** hits allowed per life (1 = normal; easy mode sets more) */
+  hitsPerLife = 1;
   /** true while the dad stands inside the X-ray tunnel (nothing thrown can hit him) */
   sheltered = false;
 
@@ -224,6 +230,8 @@ export class GameSim {
       bag: null,
       jumpCredits: new Set(),
       deadTimer: 0,
+      hits: 0,
+      invuln: 0,
     };
     const sonY = this.level.floorSurface(def.son.floor, def.son.x)!;
     this.son = {
@@ -810,6 +818,7 @@ export class GameSim {
   private collide(): void {
     const d = this.dad;
     if (d.state === 'dead') return;
+    if (d.invuln > 0) d.invuln--;
     const db = rect(d.x, d.y, T.dad.hitW, T.dad.hitH);
     const def = this.level.def;
 
@@ -854,6 +863,15 @@ export class GameSim {
           this.addScore(h.kind === 'roller' ? T.score.catchRoller : T.score.catchBouncer, h.x, h.y - 8);
           this.sfx('catch');
           if (d.bag.count >= T.bag.capacity) this.dropBag();
+          continue;
+        }
+        if (d.invuln > 0) continue; // still blinking from the last hit
+        if (d.hits + 1 < this.hitsPerLife) {
+          // easy mode: knocked about, but still standing
+          d.hits++;
+          d.invuln = T.easy.invuln;
+          h.dead = true;
+          this.sfx('hurt');
           continue;
         }
         this.killDad();

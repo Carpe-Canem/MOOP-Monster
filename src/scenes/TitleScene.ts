@@ -4,6 +4,7 @@ import { P } from '../view/palette';
 import { attachCrt } from '../view/crt';
 import { loadScores } from '../systems/storage';
 import { audio } from '../audio/engine';
+import { settings, saveSettings } from '../systems/settings';
 
 const ORD = ['1ST', '2ND', '3RD', '4TH', '5TH'];
 
@@ -44,6 +45,8 @@ export class TitleScene extends Phaser.Scene {
 
     ctext(this, 112, 226, 'ARROWS/WASD MOVE  SPACE JUMP', P.grey1);
     ctext(this, 112, 236, 'P PAUSE  M MUTE  T SOUND TEST', P.grey1);
+    const easyLabel = () => (settings.easy ? 'E EASY MODE: ON  (3 HITS)' : 'E EASY MODE: OFF');
+    const easyText = ctext(this, 112, 246, easyLabel(), settings.easy ? P.yellow : P.grey1);
 
     const kb = this.input.keyboard!;
     const start = () => {
@@ -62,6 +65,12 @@ export class TitleScene extends Phaser.Scene {
       if (e.key === 't' || e.key === 'T') {
         this.scene.start('SoundTest');
         return;
+      }
+      if (e.key === 'e' || e.key === 'E') {
+        settings.easy = !settings.easy;
+        saveSettings();
+        easyText.setText(easyLabel()).setTint(settings.easy ? P.yellow : P.grey1);
+        audio.sfx('tick');
       }
       audio.music('title');
     };
