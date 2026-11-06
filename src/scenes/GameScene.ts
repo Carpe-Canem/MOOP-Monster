@@ -68,7 +68,7 @@ export class GameScene extends Phaser.Scene {
     this.demo = !!data.demo;
     this.demoEnd = 0;
     // the full game is the house, then the airport; the attract demo only shows the house
-    this.sim = new GameSim(this.demo ? house : [house, airport], { loop: data.loop ?? 1, stage: data.stage ?? 0, rollersOnly: this.demo });
+    this.sim = new GameSim(this.demo ? house : [house, airport], { loop: data.loop ?? 1, stage: data.stage ?? 0, rollersOnly: this.demo, holdWin: !this.demo });
     this.acc = 0;
     this.jumpLatch = false;
     this.paused = false;
@@ -197,6 +197,19 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.render();
+    if (this.sim.winPending && !this.leaving) {
+      // the airport is cleared: play the ending, then the next (faster) loop starts
+      this.leaving = true;
+      audio.stopMusic();
+      this.events.once('resume', () => {
+        this.leaving = false;
+        this.sim.finishWin();
+        this.acc = 0;
+      });
+      this.scene.pause();
+      this.scene.launch('Cutscene', { kind: 'ending' });
+      return;
+    }
     if (this.demo) {
       this.demoText.setVisible(Math.floor(this.sim.frame / 30) % 2 === 0);
       // end the demo a moment after a knockout, a clear, or 40 s

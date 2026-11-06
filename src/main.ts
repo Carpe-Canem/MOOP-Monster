@@ -4,6 +4,7 @@ import { BootScene } from './scenes/BootScene';
 import { TitleScene } from './scenes/TitleScene';
 import { GameScene } from './scenes/GameScene';
 import { GameOverScene } from './scenes/GameOverScene';
+import { CutsceneScene } from './scenes/CutsceneScene';
 import { SoundTestScene } from './scenes/SoundTestScene';
 import { audio } from './audio/engine';
 import { initBezel, drawBezel } from './view/bezel';
@@ -24,7 +25,7 @@ const game = new Phaser.Game({
     autoCenter: Phaser.Scale.NO_CENTER, // the page centers the canvas (index.html flexbox)
     zoom: fitZoom(),
   },
-  scene: [BootScene, TitleScene, GameScene, GameOverScene, SoundTestScene],
+  scene: [BootScene, TitleScene, GameScene, GameOverScene, SoundTestScene, CutsceneScene],
 });
 
 window.addEventListener('resize', () => {
@@ -34,4 +35,4 @@ window.addEventListener('resize', () => {
 game.events.once('ready', () => initBezel(game.canvas));
 
 // Dev-only handle for debugging from the browser console (stripped from production builds).
-if (import.meta.env.DEV) Object.assign(window, { game, audio });
+if (import.meta.env.DEV) Object.assign(window, { game, audio, playCutscene: (kind: 'intro' | 'ending') => game.scene.getScenes(true).forEach((sc) => sc.scene.start('Cutscene', { kind, next: { key: 'Title' } })) });

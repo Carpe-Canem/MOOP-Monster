@@ -280,7 +280,7 @@ MOOP-Monster/
 | **M3** ✓ | Audio: sound effects plus the title, stage and jingle music. |
 | **M4** ✓ | Polish: CRT toggle, pause menu with volume and mute (both saved in the browser), title screen with the MOOP logo and the "Matter Out Of Place" subtitle card, attract demo, screen-side bezel art. |
 | **M5** ✓ | Airport stage (stage 2), the house → airport cycle, and the **win condition**. |
-| **M6** | Intro cutscene (story setup) and ending cutscene (son on the plane). |
+| **M6** ✓ | Intro cutscene ("packing panic", 4 panels) and ending cutscene (grumpy son on the plane, 3 panels). `src/scenes/CutsceneScene.ts`: pixel panels with typewriter captions; Enter advances, Esc skips. The intro plays Title → Game; the ending pauses the game after the airport tally, then the next loop starts. |
 | **M7** | Production build, hosting choice, deploy. |
 
 ---

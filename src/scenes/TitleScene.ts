@@ -50,7 +50,9 @@ export class TitleScene extends Phaser.Scene {
       if (this.t < 20) return;
       // dev-only playtest shortcut: http://localhost:5173/?stage=airport starts at the airport
       const stage = import.meta.env.DEV && new URLSearchParams(location.search).get('stage') === 'airport' ? 1 : 0;
-      this.scene.start('Game', { loop: 1, stage });
+      // the story intro plays first (skipped on the dev airport shortcut)
+      if (stage === 0) this.scene.start('Cutscene', { kind: 'intro', next: { key: 'Game', data: { loop: 1, stage } } });
+      else this.scene.start('Game', { loop: 1, stage });
     };
     // browsers only allow sound after a key press: the first key starts the title music
     const anyKey = (e: KeyboardEvent) => {

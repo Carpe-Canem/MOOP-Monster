@@ -607,6 +607,37 @@ export const SON: SpriteSet = {
 };
 
 // Sweat drop flung off the son when he throws (3x4)
+/** Edit single pixels of a row grid: [row, col, char]. */
+function editRows(rows: string[], edits: [number, number, string][]): string[] {
+  const out = [...rows];
+  for (const [y, x, ch] of edits) out[y] = out[y].slice(0, x) + ch + out[y].slice(x + 1);
+  return out;
+}
+
+// sonWink: sonCalm with his right eye squeezed shut and a lopsided smirk (ending cutscene)
+{
+  const calm = SON.sonCalm;
+  SON.sonWink = {
+    ...calm,
+    rows: editRows(calm.rows, [
+      [6, 25, 's'], // open pupil becomes skin...
+      [7, 25, 'n'], // ...and a closed-eye line sits just below
+      [7, 26, 'n'],
+      [9, 23, 's'], // smirk: the mouth shifts right and stretches into a lopsided grin
+      [9, 25, 'n'],
+      [9, 26, 'n'],
+    ]),
+    layer2: {
+      ...calm.layer2!,
+      rows: editRows(calm.layer2!.rows, [
+        [6, 26, '.'], // no eye-white on the winking side
+        [9, 25, '.'],
+        [9, 26, '.'],
+      ]),
+    },
+  };
+}
+
 export const FX: SpriteSet = {
   sweat: {
     colors: { c: 'cyan', w: 'white' },

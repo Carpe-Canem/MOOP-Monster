@@ -92,6 +92,8 @@ export interface SimOptions {
   rng?: () => number;
   /** attract-mode demo: the son only throws rolling bottles */
   rollersOnly?: boolean;
+  /** pause at the end of the last stage so the scene can play the ending cutscene (then call finishWin) */
+  holdWin?: boolean;
 }
 
 const rect = (x: number, y: number, w: number, h: number) => ({ l: x - w / 2, r: x + w / 2, t: y - h, b: y });
@@ -103,6 +105,9 @@ export class GameSim {
   stage = 0;
   readonly rng: () => number;
   private readonly rollersOnly: boolean;
+  private readonly holdWin: boolean;
+  /** true once the last stage is cleared and the sim is waiting for finishWin() */
+  winPending = false;
 
   phase: Phase = 'ready';
   phaseTimer = 0;
@@ -134,6 +139,7 @@ export class GameSim {
     this.levels = (Array.isArray(defs) ? defs : [defs]).map((d) => new Level(d));
     this.rng = opts.rng ?? Math.random;
     this.rollersOnly = !!opts.rollersOnly;
+    this.holdWin = !!opts.holdWin;
     this.loop = opts.loop ?? 1;
     this.score = opts.score ?? 0;
     this.lives = opts.lives ?? T.lives;
@@ -322,19 +328,26 @@ export class GameSim {
             this.addScore(t);
             this.sfx('tick');
           }
+        } else if (this.winPending) {
+          // waiting for the ending cutscene to finish
         } else if (++this.tallyWait > 60) {
           // short pause after the count, then the next stage (or, after the last, a faster loop)
           if (this.stage + 1 < this.levels.length) this.enterStage(this.stage + 1);
-          else {
-            this.loop++;
-            this.enterStage(0);
-          }
+          else if (this.holdWin) this.winPending = true;
+          else this.finishWin();
         }
         break;
 
       case 'over':
         break;
     }
+  }
+
+  /** The cycle is complete: start the next, faster loop at the first stage. */
+  finishWin(): void {
+    this.winPending = false;
+    this.loop++;
+    this.enterStage(0);
   }
 
   /** Belts tick toward reversal; scanners beep as they turn red; the chute drops suitcases. */
