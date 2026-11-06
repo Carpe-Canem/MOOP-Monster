@@ -6,6 +6,12 @@
       "runtimeExecutable": "C:/Program Files/nodejs/npx.cmd",
       "runtimeArgs": ["vite", "--port", "5173", "--strictPort"],
       "port": 5173
+    },
+    {
+      "name": "moop-prod",
+      "runtimeExecutable": "C:/Program Files/nodejs/npx.cmd",
+      "runtimeArgs": ["vite", "preview", "--port", "4173", "--strictPort"],
+      "port": 4173
     }
   ]
 }
