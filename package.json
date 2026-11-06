@@ -1,0 +1,29 @@
+{
+  "name": "moop-monster",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "simtest": "rolldown tools/simtest.ts -o node_modules/.cache/simtest.mjs -p node -f esm && node node_modules/.cache/simtest.mjs",
+    "art:preview": "rolldown tools/preview.ts -o node_modules/.cache/preview.mjs -p node -f esm --external sharp && node node_modules/.cache/preview.mjs",
+    "art:pixelize": "rolldown tools/pixelize.ts -o node_modules/.cache/pixelize.mjs -p node -f esm --external sharp && node node_modules/.cache/pixelize.mjs",
+    "art:samples": "rolldown tools/samples.ts -o node_modules/.cache/samples.mjs -p node -f esm --external sharp && node node_modules/.cache/samples.mjs",
+    "art:bezels": "rolldown tools/bezels.ts -o node_modules/.cache/bezels.mjs -p node -f esm --external sharp && node node_modules/.cache/bezels.mjs",
+    "art:logomock": "rolldown tools/logomock.ts -o node_modules/.cache/logomock.mjs -p node -f esm --external sharp && node node_modules/.cache/logomock.mjs",
+    "art:airport": "rolldown tools/airportmock.ts -o node_modules/.cache/airportmock.mjs -p node -f esm --external sharp && node node_modules/.cache/airportmock.mjs"
+  },
+  "dependencies": {
+    "phaser": "4.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "rolldown": "1.2.16",
+    "sharp": "0.35.5",
+    "typescript": "7.0.2",
+    "vite": "8.3.6"
+  }
+}
